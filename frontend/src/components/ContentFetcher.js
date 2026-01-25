@@ -50,73 +50,105 @@ function parseDocumentSections(html) {
   let currentSection = null;
   let currentContent = [];
 
-  const sectionMap = {
-    'an update from rachel head': 'rachel-head',
-    'rachel head': 'rachel-head',
-    'great place to work': 'great-place-to-work',
-    'sales': 'sales',
-    'domains capability news': 'domains-capability',
-    'domains capability': 'domains-capability',
-    'chapter': 'chapter',
-    'domains networks': 'domains-networks',
-    'sustainability corner': 'sustainability',
-    'sustainability': 'sustainability',
-    'aob': 'aob',
-    'want to contribute': 'contribute',
-    'contribute': 'contribute'
-  };
+  // Map header text to section IDs
+  const sectionHeaders = [
+    { patterns: ['an update from rachel head', 'rachel head'], id: 'rachel-head' },
+    { patterns: ['great place to work'], id: 'great-place-to-work' },
+    { patterns: ['sales'], id: 'sales' },
+    { patterns: ['domains capability news', 'domains capability'], id: 'domains-capability' },
+    { patterns: ['chapter'], id: 'chapter' },
+    { patterns: ['domains networks'], id: 'domains-networks' },
+    { patterns: ['sustainability corner', 'sustainability'], id: 'sustainability' },
+    { patterns: ['aob'], id: 'aob' },
+    { patterns: ['want to contribute', 'contribute to the newsletter'], id: 'contribute' }
+  ];
 
+  // Check if text matches any section header
   const findSectionId = (text) => {
     const normalizedText = text.toLowerCase().trim();
-    for (const [key, value] of Object.entries(sectionMap)) {
-      if (normalizedText.includes(key)) {
-        return value;
+    for (const header of sectionHeaders) {
+      for (const pattern of header.patterns) {
+        if (normalizedText.includes(pattern)) {
+          return header.id;
+        }
       }
     }
     return null;
   };
 
-  const processElement = (element) => {
+  // Check if element is a header (Google Docs uses various formats)
+  const isHeader = (element) => {
     const tagName = element.tagName?.toLowerCase();
     const text = element.textContent?.trim() || '';
-
-    if ((tagName === 'h1' || tagName === 'h2' || 
-        (tagName === 'p' && element.querySelector('span[style*="font-size"]'))) && text) {
-      
-      const sectionId = findSectionId(text);
-      
-      if (sectionId) {
-        if (currentSection && currentContent.length > 0) {
-          sections[currentSection] = sanitizeAndProcessContent(currentContent.join(''));
-        }
-        currentSection = sectionId;
-        currentContent = [];
-        return;
+    
+    if (!text) return false;
+    
+    // Check for actual h1-h3 tags
+    if (['h1', 'h2', 'h3'].includes(tagName)) {
+      return findSectionId(text);
+    }
+    
+    // Google Docs often uses styled spans for headers
+    const spans = element.querySelectorAll('span');
+    for (const span of spans) {
+      const style = span.getAttribute('style') || '';
+      // Look for larger font sizes (typically 18pt+ for headers)
+      const fontSizeMatch = style.match(/font-size:\s*(\d+)/);
+      if (fontSizeMatch && parseInt(fontSizeMatch[1]) >= 16) {
+        const sectionId = findSectionId(span.textContent);
+        if (sectionId) return sectionId;
+      }
+      // Also check for bold styling with section names
+      if (style.includes('font-weight:700') || style.includes('font-weight:bold')) {
+        const sectionId = findSectionId(span.textContent);
+        if (sectionId) return sectionId;
       }
     }
+    
+    // Direct text match for simple headers
+    return findSectionId(text);
+  };
 
-    if (currentSection) {
-      currentContent.push(element.outerHTML || '');
+  // Save current section content
+  const saveCurrentSection = () => {
+    if (currentSection && currentContent.length > 0) {
+      sections[currentSection] = sanitizeAndProcessContent(currentContent.join(''));
     }
   };
 
-  const children = body.children;
-  for (let i = 0; i < children.length; i++) {
-    processElement(children[i]);
-  }
+  // Process all child elements
+  const allElements = body.querySelectorAll('*');
+  const processedElements = new Set();
+  
+  // First pass: find all headers and mark their positions
+  const headerPositions = [];
+  allElements.forEach((element, index) => {
+    const sectionId = isHeader(element);
+    if (sectionId && !processedElements.has(element)) {
+      headerPositions.push({ element, index, sectionId });
+      processedElements.add(element);
+    }
+  });
 
-  if (currentSection && currentContent.length > 0) {
-    sections[currentSection] = sanitizeAndProcessContent(currentContent.join(''));
-  }
+  // Second pass: extract content between headers
+  const children = Array.from(body.children);
+  
+  children.forEach((element) => {
+    const sectionId = isHeader(element);
+    
+    if (sectionId) {
+      // Found a new header - save previous section and start new one
+      saveCurrentSection();
+      currentSection = sectionId;
+      currentContent = [];
+    } else if (currentSection) {
+      // Add content to current section (only if we're in a section)
+      currentContent.push(element.outerHTML || '');
+    }
+  });
 
-  if (Object.keys(sections).length === 0) {
-    const allContent = body.innerHTML;
-    const defaultSections = ['rachel-head', 'great-place-to-work', 'sales', 'domains-capability', 
-                           'chapter', 'domains-networks', 'sustainability', 'aob', 'contribute'];
-    defaultSections.forEach(id => {
-      sections[id] = sanitizeAndProcessContent(allContent);
-    });
-  }
+  // Save the last section
+  saveCurrentSection();
 
   return sections;
 }
