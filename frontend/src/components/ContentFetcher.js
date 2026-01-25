@@ -78,14 +78,19 @@ function parseDocumentSections(html) {
     { patterns: ['domains networks'], id: 'domains-networks' },
     { patterns: ['sustainability corner'], id: 'sustainability' },
     { patterns: ['point of view'], id: 'point-of-view' },
-    { patterns: ['sales'], id: 'sales' },
-    { patterns: ['chapter'], id: 'chapter' }
+    { patterns: ['sales'], id: 'sales' }
   ];
 
-  // Special case for "AI" - needs exact match since it's short
+  // Special case patterns - need exact or near-exact match
   const isAIHeader = (text) => {
     const trimmed = text.trim();
-    return trimmed === 'AI' || trimmed === 'AI\n' || /^AI\s*$/.test(trimmed);
+    return trimmed === 'AI' || /^AI\s*$/.test(trimmed);
+  };
+
+  const isChapterHeader = (text) => {
+    const trimmed = text.trim().toLowerCase();
+    // Must be exactly "chapter" or "chapter" followed by space/newline only
+    return trimmed === 'chapter' || /^chapter\s*$/.test(trimmed);
   };
 
   // Check if text matches any section header
@@ -95,6 +100,11 @@ function parseDocumentSections(html) {
     // Check for exact AI match first
     if (isAIHeader(text)) {
       return 'ai';
+    }
+
+    // Check for exact Chapter match
+    if (isChapterHeader(text)) {
+      return 'chapter';
     }
     
     for (const header of sectionHeaders) {
