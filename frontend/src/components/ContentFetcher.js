@@ -157,11 +157,15 @@ function parseDocumentSections(html) {
 
   const elements = getAllElements(contentDiv);
   
-  elements.forEach((element) => {
+  // Debug: log what sections we find
+  console.log('Parsing document with', elements.length, 'elements');
+  
+  elements.forEach((element, idx) => {
     const sectionId = isHeader(element);
     
     if (sectionId) {
       // Found a new header - save previous section and start new one
+      console.log(`Found section header: ${sectionId} at index ${idx}`);
       saveCurrentSection();
       currentSection = sectionId;
       currentContent = [];
