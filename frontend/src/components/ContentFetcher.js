@@ -25,13 +25,27 @@ export function useGoogleDocContent() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(CORS_PROXY + encodeURIComponent(GOOGLE_DOC_URL));
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch document');
+      let html = null;
+      let lastError = null;
+
+      // Try each CORS proxy until one works
+      for (const proxy of CORS_PROXIES) {
+        try {
+          const response = await fetch(proxy + encodeURIComponent(GOOGLE_DOC_URL));
+          if (response.ok) {
+            html = await response.text();
+            break;
+          }
+        } catch (err) {
+          lastError = err;
+          continue;
+        }
       }
 
-      const html = await response.text();
+      if (!html) {
+        throw lastError || new Error('Failed to fetch document from all proxies');
+      }
+
       const sections = parseDocumentSections(html);
       setContent(sections);
     } catch (err) {
