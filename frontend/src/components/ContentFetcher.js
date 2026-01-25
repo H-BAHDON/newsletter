@@ -70,7 +70,7 @@ function parseDocumentSections(html) {
   let currentSection = null;
   let currentContent = [];
 
-  // Map header text to section IDs - order matters for matching
+  // Map header text to section IDs - order matters for matching (most specific first)
   const sectionHeaders = [
     { patterns: ['an update from rachel h'], id: 'rachel-head' },
     { patterns: ['great place to work'], id: 'great-place-to-work' },
@@ -79,13 +79,24 @@ function parseDocumentSections(html) {
     { patterns: ['sustainability corner'], id: 'sustainability' },
     { patterns: ['point of view'], id: 'point-of-view' },
     { patterns: ['sales'], id: 'sales' },
-    { patterns: ['chapter'], id: 'chapter' },
-    { patterns: ['ai'], id: 'ai' }
+    { patterns: ['chapter'], id: 'chapter' }
   ];
+
+  // Special case for "AI" - needs exact match since it's short
+  const isAIHeader = (text) => {
+    const trimmed = text.trim();
+    return trimmed === 'AI' || trimmed === 'AI\n' || /^AI\s*$/.test(trimmed);
+  };
 
   // Check if text matches any section header
   const findSectionId = (text) => {
     const normalizedText = text.toLowerCase().trim();
+    
+    // Check for exact AI match first
+    if (isAIHeader(text)) {
+      return 'ai';
+    }
+    
     for (const header of sectionHeaders) {
       for (const pattern of header.patterns) {
         if (normalizedText.includes(pattern)) {
