@@ -6,15 +6,15 @@ import SectionPage from './pages/SectionPage';
 import './App.css';
 
 const sections = [
-  { id: 'rachel-head', title: 'An update from Rachel Head…', path: '/rachel-head' },
+  { id: 'rachel-head', title: 'An update from Rachel H...', path: '/rachel-head' },
   { id: 'great-place-to-work', title: 'Great Place To Work', path: '/great-place-to-work' },
+  { id: 'ai', title: 'AI', path: '/ai' },
   { id: 'sales', title: 'Sales', path: '/sales' },
   { id: 'domains-capability', title: 'Domains Capability News', path: '/domains-capability' },
   { id: 'chapter', title: 'Chapter', path: '/chapter' },
   { id: 'domains-networks', title: 'Domains Networks', path: '/domains-networks' },
   { id: 'sustainability', title: 'Sustainability Corner', path: '/sustainability' },
-  { id: 'aob', title: 'AOB', path: '/aob' },
-  { id: 'contribute', title: 'Want to contribute to the newsletter?', path: '/contribute' }
+  { id: 'point-of-view', title: 'Point of View', path: '/point-of-view' }
 ];
 
 function App() {

@@ -72,15 +72,15 @@ function parseDocumentSections(html) {
 
   // Map header text to section IDs - order matters for matching
   const sectionHeaders = [
-    { patterns: ['an update from rachel head'], id: 'rachel-head' },
+    { patterns: ['an update from rachel h'], id: 'rachel-head' },
     { patterns: ['great place to work'], id: 'great-place-to-work' },
     { patterns: ['domains capability news'], id: 'domains-capability' },
     { patterns: ['domains networks'], id: 'domains-networks' },
     { patterns: ['sustainability corner'], id: 'sustainability' },
-    { patterns: ['point of view'], id: 'contribute' },
+    { patterns: ['point of view'], id: 'point-of-view' },
     { patterns: ['sales'], id: 'sales' },
     { patterns: ['chapter'], id: 'chapter' },
-    { patterns: ['aob'], id: 'aob' }
+    { patterns: ['ai'], id: 'ai' }
   ];
 
   // Check if text matches any section header
