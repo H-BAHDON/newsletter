@@ -4,7 +4,12 @@ import DOMPurify from 'dompurify';
 const GOOGLE_DOC_URL = process.env.REACT_APP_GOOGLE_DOC_URL || 
   'https://docs.google.com/document/d/e/2PACX-1vT7ebn-gWDjlSl0XZkP5xmdmltWAK44hYojISgalRiUg2746gWD-LRft06dS3z0Qvno5t6cjIeXDRNa/pub';
 
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+// Multiple CORS proxies for fallback
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.allorigins.win/raw?url=',
+  'https://cors-anywhere.herokuapp.com/'
+];
 
 export function useGoogleDocContent() {
   const [content, setContent] = useState({});
