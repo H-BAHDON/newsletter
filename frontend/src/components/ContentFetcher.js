@@ -28,10 +28,19 @@ export function useGoogleDocContent() {
       let html = null;
       let lastError = null;
 
+      // Add cache-busting timestamp to force fresh content
+      const cacheBuster = `?cb=${Date.now()}`;
+      const docUrlWithCacheBust = GOOGLE_DOC_URL + cacheBuster;
+
       // Try each CORS proxy until one works
       for (const proxy of CORS_PROXIES) {
         try {
-          const response = await fetch(proxy + encodeURIComponent(GOOGLE_DOC_URL));
+          const response = await fetch(proxy + encodeURIComponent(docUrlWithCacheBust), {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          });
           if (response.ok) {
             html = await response.text();
             break;
