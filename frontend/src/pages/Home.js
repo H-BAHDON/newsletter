@@ -43,13 +43,7 @@ function Home({ sections }) {
     <div className="home-page">
       <section className="hero-section">
         <div className="container">
-          <div className="hero-content animate-fade-in">
-            <h1 className="hero-title">Internal Newsletter</h1>
-            <p className="hero-subtitle">
-              Stay connected with the latest updates, achievements, and stories from across our organization. 
-              Explore our sections below to discover what's happening at Capgemini.
-            </p>
-          </div>
+         
         </div>
       </section>
 

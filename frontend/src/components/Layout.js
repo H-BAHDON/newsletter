@@ -21,7 +21,7 @@ function Layout({ children, sections }) {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`} data-testid="navbar">
         <div className="navbar-top">
           <Link to="/" className="logo" data-testid="logo-link">
-            Capgemini Newsletter
+            Capgemini Internal Newsletter
           </Link>
           
           <button
