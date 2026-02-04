@@ -152,21 +152,15 @@ function parseDocumentSections(html) {
   };
 
   // Get all direct children and nested elements
-  const getAllElements = (parent) => {
-    const elements = [];
-    const walk = (node) => {
-      if (node.nodeType === 1) { // Element node
-        elements.push(node);
-        // Don't recurse into elements we've added - process siblings instead
-      }
-    };
-    
-    // Process direct children of the content container
-    const docContent = parent.querySelector('.doc-content') || parent;
-    Array.from(docContent.children).forEach(child => elements.push(child));
-    
-    return elements;
-  };
+const getAllElements = (parent) => {
+  const elements = [];
+
+  const docContent = parent.querySelector('.doc-content') || parent;
+  Array.from(docContent.children).forEach(child => elements.push(child));
+
+  return elements;
+};
+
 
   const elements = getAllElements(contentDiv);
   
