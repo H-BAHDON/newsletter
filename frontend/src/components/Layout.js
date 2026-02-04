@@ -81,7 +81,7 @@ function Layout({ children, sections }) {
           <div className="footer-content">
             <div className="footer-brand">
               <p className="footer-logo-text">Capgemini</p>
-              <p className="footer-tagline">Get The Future You Want</p>
+              <p className="footer-tagline">Make It Real</p>
             </div>
             <div className="footer-links">
               <a href="https://www.capgemini.com" target="_blank" rel="noopener noreferrer" className="footer-link" data-testid="footer-website">
